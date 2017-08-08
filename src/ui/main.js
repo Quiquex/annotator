@@ -105,7 +105,7 @@ function removeDynamicStyle() {
 
 
 // Helper function to add permissions checkboxes to the editor
-function addPermissionsCheckboxes(editor, ident, authz) {
+function addPermissionsCheckboxes(editor, ident, authz, permissions) {
     function createLoadCallback(action) {
         return function loadCallback(field, annotation) {
             field = util.$(field).show();
@@ -158,19 +158,23 @@ function addPermissionsCheckboxes(editor, ident, authz) {
         };
     }
 
-    editor.addField({
-        type: 'checkbox',
-        label: _t('Allow anyone to <strong>view</strong> this annotation'),
-        load: createLoadCallback('read'),
-        submit: createSubmitCallback('read')
-    });
+    if (permissions.indexOf('read') !== -1) {
+        editor.addField({
+            type: 'checkbox',
+            label: _t('Allow anyone to <strong>view</strong> this annotation'),
+            load: createLoadCallback('read'),
+            submit: createSubmitCallback('read')
+        });
+    }
 
-    editor.addField({
-        type: 'checkbox',
-        label: _t('Allow anyone to <strong>edit</strong> this annotation'),
-        load: createLoadCallback('update'),
-        submit: createSubmitCallback('update')
-    });
+    if (permissions.indexOf('update') !== -1) {
+        editor.addField({ 
+            type: 'checkbox',
+            label: _t('Allow anyone to <strong>edit</strong> this annotation'),
+            load: createLoadCallback('update'),
+            submit: createSubmitCallback('update')
+        });
+    }
 }
 
 
@@ -211,6 +215,7 @@ function main(options) {
     }
 
     options.element = options.element || global.document.body;
+    options.permissions = options.permissions || [];
     options.editorExtensions = options.editorExtensions || [];
     options.viewerExtensions = options.viewerExtensions || [];
 
@@ -238,7 +243,7 @@ function main(options) {
         });
         s.editor.attach();
 
-        addPermissionsCheckboxes(s.editor, ident, authz);
+        addPermissionsCheckboxes(s.editor, ident, authz, options.permissions);
 
         s.highlighter = new highlighter.Highlighter(options.element);
 
