@@ -70,14 +70,14 @@ AclAuthzPolicy.prototype.permits = function (action, context, identity) {
         // Fine-grained authorization on permissions field
         var tokens = permissions[action];
 
-        if (typeof tokens === 'undefined' || tokens === null) {
+        if (typeof tokens === 'undefined' || tokens === null || tokens === "") {
             // Missing tokens array for this action: anyone can perform
             // action.
             return true;
         }
 
         for (var i = 0, len = tokens.length; i < len; i++) {
-            if (userid === tokens[i]) {
+            if (userid === tokens[i] || tokens === "") {
                 return true;
             }
         }
