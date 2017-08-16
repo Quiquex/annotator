@@ -175,6 +175,15 @@ function addPermissionsCheckboxes(editor, ident, authz, permissions) {
             submit: createSubmitCallback('update')
         });
     }
+
+    if (permissions.indexOf('delete') !== -1) {
+        editor.addField({ 
+            type: 'checkbox',
+            label: _t('Allow anyone to <strong>delete</strong> this annotation'),
+            load: createLoadCallback('delete'),
+            submit: createSubmitCallback('delete')
+        });
+    }
 }
 
 
@@ -215,7 +224,7 @@ function main(options) {
     }
 
     options.element = options.element || global.document.body;
-    options.permissions = options.permissions || [];
+    options.requestedPermissions = options.requestedPermissions || [];
     options.editorExtensions = options.editorExtensions || [];
     options.viewerExtensions = options.viewerExtensions || [];
 
@@ -243,7 +252,7 @@ function main(options) {
         });
         s.editor.attach();
 
-        addPermissionsCheckboxes(s.editor, ident, authz, options.permissions);
+        addPermissionsCheckboxes(s.editor, ident, authz, options.requestedPermissions);
 
         s.highlighter = new highlighter.Highlighter(options.element);
 
