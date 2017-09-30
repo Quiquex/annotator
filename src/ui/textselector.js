@@ -6,7 +6,18 @@ var util = require('../util');
 
 var $ = util.$;
 
+// id returns an identifier unique within this session
+var id = (function () {
+    var counter;
+    counter = -1;
+    return function () {
+        return counter += 1;
+    };
+}());
+
 var TEXTSELECTOR_NS = 'annotator-textselector';
+
+
 
 // isAnnotator determines if the provided element is part of Annotator. Useful
 // for ignoring mouse actions on the annotator elements.
@@ -24,6 +35,7 @@ function isAnnotator(element) {
 // and can notify another object of a selection event
 function TextSelector(element, options) {
     this.element = element;
+    this.id = id();
     this.options = $.extend(true, {}, TextSelector.options, options);
     this.onSelection = this.options.onSelection;
 
@@ -33,7 +45,7 @@ function TextSelector(element, options) {
         this.document = this.element.ownerDocument;
 
         $(this.document.body)
-            .on("mouseup." + TEXTSELECTOR_NS, function (e) {
+            .on("mouseup." + TEXTSELECTOR_NS + this.id, function (e) {
                 self._checkForEndSelection(e);
             });
     } else {
@@ -46,7 +58,7 @@ function TextSelector(element, options) {
 
 TextSelector.prototype.destroy = function () {
     if (this.document) {
-        $(this.document.body).off("." + TEXTSELECTOR_NS);
+        $(this.document.body).off("." + TEXTSELECTOR_NS + this.id);
     }
 };
 
